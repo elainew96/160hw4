@@ -3,7 +3,7 @@
 #include <string.h>
 
 struct tweeter {
-    char* name;
+    char name[16];
     int num; //number of tweets
 };
 
@@ -28,8 +28,8 @@ char* getTweeter(char* line, int num)
 
 int main(int argc, char *argv[]) {
 
-    //char* path = argv[0];
-    char* path = "cl-tweets-shorter.csv";
+    char* path = argv[1];
+    //char* path = "cl-tweets-shorter.csv";
     FILE* stream = fopen(path, "r");
 
     // struct tweeter* headTweeter;
@@ -37,28 +37,30 @@ int main(int argc, char *argv[]) {
     fgets(line,1024,stream);
     struct node* head = NULL;
     struct node* curNode;
+    struct node* first;
     while (fgets(line, 1024, stream)) {
-        char* tmp = strdup(line);
+        char* tmp = strdup(line); //this line messes up the stored stuff
+        //printf("line: %s\n",line);
         char* result = getTweeter(tmp, 8);
         printf("RESULT IS = %s\n", result);
         if (head==NULL) {
             struct tweeter* name = (struct tweeter*)malloc(sizeof(struct tweeter));
-            name->name = result;
+            strcpy(name->name, result);
             name->num = 1;
-            struct node* first = (struct node*)malloc(sizeof(struct node));
+            first = (struct node*)malloc(sizeof(struct node));
             first->data = name; //might have to be a reference
             first->nextNode = NULL;
             head = first;
-            //printf("head: %s\n",head->data->name);
         } else {
             curNode = head;
-            if (result==curNode->data->name) {
+            if (strcmp(result,curNode->data->name)==0) {
                 curNode->data->num++;
             } else {
                 int found = 0;
                 while (curNode->nextNode!=NULL) {
+                  //  printf("curNode: %s\n",curNode->data->name);
                     //try finding a match, if not then create a new struct and place it
-                    if (result==curNode->data->name) {
+                    if (strcmp(result,curNode->data->name)==0) {
                         curNode->data->num++;
                         found = 1;
                         break;
@@ -67,7 +69,7 @@ int main(int argc, char *argv[]) {
                 }
                 if (found==0) {
                     struct tweeter* id = (struct tweeter*)malloc(sizeof(struct tweeter));
-                    id->name = result;
+                    strcpy(id->name, result);
                     id->num = 1;
                     struct node* cont = (struct node*)malloc(sizeof(struct node));
                     cont->data = id; //might have to be a reference
