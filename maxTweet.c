@@ -12,8 +12,7 @@ struct node {
 	  struct node *nextNode;
 };
 
-char* getTweeter(char* line, int num)
-{
+char* getTweeter(char* line, int num) {
     char *tok = (char *) malloc(sizeof(char) * 12);
     int count = 0;
     for (tok = strtok(line, ","); tok && *tok; tok = strtok(NULL, ",\n")) {
@@ -26,6 +25,21 @@ char* getTweeter(char* line, int num)
     return NULL;
 }
 
+int findPosition(char* line) {
+    char *tok;
+    tok = strtok(line,",\n");
+    int count = 0;
+    while (tok) {
+      if (strcmp(tok,"\"name\"")==0) {
+        //printf("found\n");
+        return count;
+      }
+      count++;
+      tok = strtok(NULL, ",\n");
+    }
+    return -1;
+}
+
 int main(int argc, char *argv[]) {
 
     char* path = argv[1];
@@ -34,15 +48,17 @@ int main(int argc, char *argv[]) {
 
     // struct tweeter* headTweeter;
     char line[1024];
+
     fgets(line,1024,stream);
+    int num = findPosition(line);
     struct node* head = NULL;
     struct node* curNode;
     struct node* first;
     while (fgets(line, 1024, stream)) {
         char* tmp = strdup(line); //this line messes up the stored stuff
         //printf("line: %s\n",line);
-        char* result = getTweeter(tmp, 8);
-        printf("RESULT IS = %s\n", result);
+        char* result = getTweeter(tmp, num);
+      //  printf("RESULT IS = %s\n", result);
         if (head==NULL) {
             struct tweeter* name = (struct tweeter*)malloc(sizeof(struct tweeter));
             strcpy(name->name, result);
